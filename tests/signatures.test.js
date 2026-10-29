@@ -1,0 +1,10 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const crypto=require('node:crypto');
+const {checkSignature}=require('../src/utils/signatures');
+const secret='a-student-only-test-secret',order='order_testABC',payment='pay_testDEF';
+const good=crypto.createHmac('sha256',secret).update(`${order}|${payment}`).digest('hex');
+test('accepts a valid HMAC payment signature',()=>assert.equal(checkSignature(order,payment,good,secret),true));
+test('rejects a forged payment ID',()=>assert.equal(checkSignature(order,'pay_attacker',good,secret),false));
+test('rejects malformed signatures without throwing',()=>assert.equal(checkSignature(order,payment,'invalid',secret),false));
+test('rejects the wrong provider order',()=>assert.equal(checkSignature('order_wrong',payment,good,secret),false));

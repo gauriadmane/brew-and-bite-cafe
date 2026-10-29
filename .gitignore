@@ -1,0 +1,26 @@
+# Local configuration and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Installed packages and generated output
+node_modules/
+coverage/
+.nyc_output/
+dist/
+build/
+.cache/
+
+# Local logs, temporary files and backups
+*.log
+npm-debug.log*
+*.zip
+*.bak
+*.tmp
+*~
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

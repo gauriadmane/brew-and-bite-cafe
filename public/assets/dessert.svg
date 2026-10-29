@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 430">
+    <defs><radialGradient id="g"><stop stop-color="#fff8f0"/><stop offset="1" stop-color="#efcdd4"/></radialGradient>
+    <filter id="s"><feGaussianBlur stdDeviation="14"/></filter></defs>
+    <rect width="640" height="430" fill="url(#g)"/><circle cx="550" cy="62" r="150" fill="#984e62" opacity=".08"/>
+    <circle cx="80" cy="350" r="150" fill="#984e62" opacity=".07"/>
+    <ellipse cx="320" cy="345" rx="160" ry="25" fill="#984e62" opacity=".12" filter="url(#s)"/>
+    <circle cx="320" cy="210" r="145" fill="#fffaf4" opacity=".67"/>
+    <text x="320" y="285" font-family="Segoe UI Emoji,Apple Color Emoji,Noto Color Emoji,sans-serif" text-anchor="middle" font-size="172">🍰</text>
+    <path d="M70 60q70 -60 140 0M430 350q70 -60 140 0" fill="none" stroke="#984e62" stroke-width="3" opacity=".17"/>
+    </svg>

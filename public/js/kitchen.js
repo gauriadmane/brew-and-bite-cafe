@@ -1,0 +1,20 @@
+(async function(){
+ const B=window.BB,{api,esc,money,toast,setApp,heading,byId,safeDate,status}=B;
+ await B.ready;
+ const user=await B.getMe();
+ if(!user){location.href='/login.html?next=/kitchen.html';return;}
+ if(!['staff','owner'].includes(user.role)){setApp(heading('Restricted','Kitchen staff only','You do not have permission to access the kitchen dashboard.'));return;}
+ setApp(heading('KITCHEN TEAM WORKSPACE',`Welcome, ${user.name.split(/\s+/)[0]}`,'Manage accepted orders, track preparation and complete secure handovers.')+`<section class="section-sm"><div class="container"><div class="kitchen-toolbar"><div><span class="role-badge staff">${esc(user.role==='owner'?'Owner access':'Approved kitchen staff')}</span><p class="muted small">Signed in as ${esc(user.name)} · Kitchen workspace</p></div><a class="btn secondary small" href="/profile.html">My profile →</a></div><div class="kitchen-stats" id="kitchen-stats" aria-live="polite"><span>Accepted: –</span><span>Preparing: –</span><span>Ready: –</span></div><div class="tool-row"><div class="chips"><span class="chip active">Accepted · Preparing · Ready</span></div><button class="btn secondary small" id="refresh-kitchen">↻ Refresh board</button></div><div id="kitchen-list" class="kitchen-grid"><div class="loading">Loading orders…</div></div><p class="small muted mt-3">This board refreshes every 20 seconds. Verify the customer's six-digit code before handover. Confirm cash with the owner first.</p></div></section>`);
+ async function load(){try{const r=await api('/kitchen/orders');
+   byId('kitchen-stats').innerHTML=['Accepted','Preparing','Ready'].map(st=>`<span><strong>${r.orders.filter(o=>o.orderStatus===st).length}</strong> ${st}</span>`).join('');
+   byId('kitchen-list').innerHTML=r.orders.length?r.orders.map(o=>`<article class="kitchen-card" data-order="${esc(o._id)}"><div class="flex between wrap"><div><span class="eyebrow">${esc(o.orderNumber)}</span><h3>Table ${esc(o.tableNumber)}</h3><span class="small muted">${safeDate(o.createdAt)}</span></div>${status(o.orderStatus)}</div><ul>${o.items.map(i=>`<li><strong>${i.quantity}×</strong> ${esc(i.name)}</li>`).join('')}</ul>${o.instructions?`<p class="message">Instructions: ${esc(o.instructions)}</p>`:''}<p class="small muted">Payment: ${esc(o.paymentMethod.toUpperCase())} · ${esc(o.paymentStatus)}</p><div class="flex wrap">
+   ${o.orderStatus==='Accepted'?`<button class="btn" data-progress="${o._id}" data-next="Preparing">Start preparation</button>`:''}
+   ${o.orderStatus==='Preparing'?`<button class="btn" data-progress="${o._id}" data-next="Ready">Mark ready</button>`:''}
+   ${o.orderStatus==='Ready'?`<form class="flex wrap" data-handover="${o._id}"><input class="input" name="otp" maxlength="6" minlength="6" pattern="[0-9]{6}" inputmode="numeric" style="max-width:155px" aria-label="Six-digit customer OTP" placeholder="6-digit OTP" required><button class="btn">Verify & hand over</button></form>`:''}</div></article>`).join(''):'<div class="empty"><h3>All caught up!</h3><p>Accepted orders will appear here automatically.</p></div>';
+   byId('kitchen-list').onclick=async e=>{const b=e.target.closest('[data-progress]');if(!b)return;b.disabled=true;
+     try{await api(`/kitchen/orders/${b.dataset.progress}/status`,{method:'PATCH',body:{status:b.dataset.next}});toast('Order status updated.');await load();}catch(e){toast(e.message,true);b.disabled=false;}};
+   byId('kitchen-list').onsubmit=async e=>{const f=e.target.closest('[data-handover]');if(!f)return;e.preventDefault();const button=f.querySelector('button');button.disabled=true;
+     try{await api(`/kitchen/orders/${f.dataset.handover}/handover`,{method:'POST',body:{otp:f.elements.otp.value}});toast('Order completed and table released.');await load();}catch(err){toast(err.message,true);button.disabled=false;}};
+  }catch(e){byId('kitchen-list').innerHTML=`<div class="message error">${esc(e.message)}</div>`;}}
+ byId('refresh-kitchen').onclick=load;await load();setInterval(()=>{if(document.visibilityState==='visible'&&!document.querySelector('input[name="otp"]:focus'))load();},20000);
+})();

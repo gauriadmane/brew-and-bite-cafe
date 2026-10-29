@@ -1,0 +1,34 @@
+{
+  "name": "brew-and-bite-cafe",
+  "version": "1.3.0",
+  "private": true,
+  "description": "Brew & Bite full-stack college café management project",
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "seed": "node scripts/seed.js",
+    "owner:create": "node scripts/create-owner.js",
+    "test": "node --test tests/*.test.js",
+    "check": "node scripts/check-syntax.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.0",
+    "nodemailer": "^7.0.6",
+    "razorpay": "^2.9.6",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "supertest": "^7.1.4"
+  }
+}
